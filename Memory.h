@@ -85,7 +85,7 @@ struct ArrayInstance
 	using Type = T;
 	T*			 Value;
 	size_t		 Size{};
-	BC_INLINE T& operator[](In<size_t> Index) const
+	BC_INLINE T& operator[](size_t Index) const
 	{
 		assert(Value && "Invalid pointer.");
 		assert(Index < Size && "Out of bounds.");
