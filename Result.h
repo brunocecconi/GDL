@@ -32,7 +32,7 @@
 #define RESULT_DEFINE(SYMBOL_NAME, TYPE_NAME, DESCRIPTION, ERROR_MESSAGE)                                              \
 	constexpr ResultInfo Result##SYMBOL_NAME()                                                                         \
 	{                                                                                                                  \
-		return {ResultInfo{TYPE_NAME, DESCRIPTION, ERROR_MESSAGE}};                                                    \
+		return {TYPE_NAME, DESCRIPTION, ERROR_MESSAGE};                                                    \
 	}
 
 #define RESULT_PARAM_OPT result_t& Result = *(result_t*)&ResultOk

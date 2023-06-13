@@ -111,7 +111,7 @@ public:
 };
 
 #if _WIN32
-using PlatformMallocator = WindowsMallocator;
+using platform_mallocator_t = WindowsMallocator;
 #endif
 
 template<size_t N>

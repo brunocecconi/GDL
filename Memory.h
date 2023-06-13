@@ -31,6 +31,8 @@
 #include <type_traits>
 #include <cassert>
 
+#define BC_ALIGN_MEMORY(SIZE, ALIGNMENT)	(SIZE + (ALIGNMENT-1)) & ~(ALIGNMENT-1)
+
 #ifndef BC_ALLOCATION_FUNCTIONS
 #define BC_ALLOCATION_FUNCTIONS
 #if _WIN32
@@ -124,7 +126,7 @@ BC_INLINE TIterator UninitializedConstruct(TIterator Begin, TIterator End, TArgs
 	static_assert(std::is_move_assignable_v<Type>, "Type is not move assignable.");
 	auto lData = Begin;
 	while (lData < End)
-		*(lData++) = Type{std::forward<TArgs>(Args)...};
+		new (lData++) Type{std::forward<TArgs>(Args)...};
 	return Begin;
 }
 
