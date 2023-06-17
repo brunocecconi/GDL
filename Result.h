@@ -35,6 +35,8 @@
 		return {TYPE_NAME, DESCRIPTION, ERROR_MESSAGE};                                                                \
 	}
 
+#define RESULT_DEFINE_TAG(SYMBOL_NAME)	RESULT_DEFINE(SYMBOL_NAME, nullptr, nullptr, nullptr)
+
 #define RESULT_PARAM_OPT result_t& Result = *(result_t*)&ResultOk
 #define RESULT_PARAM	 result_t& Result
 
@@ -52,7 +54,28 @@ struct ResultInfo
 	const char *Name, *Description, *ErrorMessage;
 };
 
+/**
+ * @brief Result type.
+ * 
+*/
 using result_t = ResultInfo (*)();
+
+/**
+ * @brief Result ensure argument type.
+ *
+ * Composes function result to check its arguments or anything you need more information about.
+ * Ex: if you have a function that has as parameters two pointers, result_composed_t TestPointer(void* P1, void* P2){}. You can
+ * with this way, check pointers and use ErrorNullPtr passing as second array position, if it fails, as ResultArg0 or ResultArg1. 
+ * I have made eight tag functions, if you need more than eight parameters to a function you probably want to create a structure instead.
+ * And the user can check using 'if(R.Result == ResultNullPtr && R.Other == ResultArg0)' indicates that you are 
+ * checking if function has returned a nullptr error for the first argument.
+ * 
+*/
+struct result_composed_t
+{
+	result_t Result{};
+	result_t Other{};
+};
 
 RESULT_DEFINE(Ok, "Ok", "Result ok.", "No error.");
 RESULT_DEFINE(ErrorFail, "ErrorFail", "Generic error fail.", "Failed. An unknown error has occurred.");
@@ -60,14 +83,20 @@ RESULT_DEFINE(ErrorNullPtr, "ErrorNullPtr", "Error null pointer.", "Invalid poin
 RESULT_DEFINE(ErrorEmptyContainer, "ErrorEmptyContainer",
 			  "Error empty container. Indicates that a data container isn't expected to be empty.",
 			  "Failed. Invalid container data, it is empty.");
-RESULT_DEFINE(ErrorEmptySrcContainer, "ErrorEmptySrcContainer",
-			  "Error empty source container. Indicates that a data container isn't expected to be empty.",
-			  "Failed. Invalid source container data, it is empty.");
-RESULT_DEFINE(ErrorEmptyDstContainer, "ErrorEmptyDstContainer",
-			  "Error empty destination container. Indicates that a data container isn't expected to be empty.",
-			  "Failed. Invalid destination container data, it is empty.");
+RESULT_DEFINE(ErrorNotEnoughMemory, "ErrorNotEnoughMemory",
+	"Error not enough memory. Indicates that a structure doesn't have memory necessary for its internal logic.",
+	"Failed. Target structure doesn't have enough memory for system internal logic.");
 RESULT_DEFINE(ErrorOutOfBounds, "ErrorOutOfBounds",
 			  "Error out of bounds. Indicates that a memory location was handled out of the buffer's memory range.",
 			  "Failed. A memory location was handled out of the buffer's memory range.");
+
+RESULT_DEFINE_TAG(Arg0);
+RESULT_DEFINE_TAG(Arg1);
+RESULT_DEFINE_TAG(Arg2);
+RESULT_DEFINE_TAG(Arg3);
+RESULT_DEFINE_TAG(Arg4);
+RESULT_DEFINE_TAG(Arg5);
+RESULT_DEFINE_TAG(Arg6);
+RESULT_DEFINE_TAG(Arg7);
 
 #endif
