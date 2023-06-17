@@ -32,7 +32,7 @@
 #define RESULT_DEFINE(SYMBOL_NAME, TYPE_NAME, DESCRIPTION, ERROR_MESSAGE)                                              \
 	constexpr ResultInfo Result##SYMBOL_NAME()                                                                         \
 	{                                                                                                                  \
-		return {TYPE_NAME, DESCRIPTION, ERROR_MESSAGE};                                                    \
+		return {TYPE_NAME, DESCRIPTION, ERROR_MESSAGE};                                                                \
 	}
 
 #define RESULT_PARAM_OPT result_t& Result = *(result_t*)&ResultOk
@@ -40,8 +40,8 @@
 
 /**
  * @brief Structure that holds data information.
- * 
-*/
+ *
+ */
 struct ResultInfo
 {
 	constexpr ResultInfo(const char* Name, const char* Description, const char* ErrorMessage)
@@ -49,13 +49,25 @@ struct ResultInfo
 	{
 	}
 
-	const char* Name, *Description, *ErrorMessage;
+	const char *Name, *Description, *ErrorMessage;
 };
 
 using result_t = ResultInfo (*)();
 
 RESULT_DEFINE(Ok, "Ok", "Result ok.", "No error.");
-RESULT_DEFINE(Fail, "Fail", "Generic fail.", "Failed. An unknow error has occurred.");
-RESULT_DEFINE(NullPtr, "NullPtr", "Null pointer.", "Invalid pointer, it's null.");
+RESULT_DEFINE(ErrorFail, "ErrorFail", "Generic error fail.", "Failed. An unknown error has occurred.");
+RESULT_DEFINE(ErrorNullPtr, "ErrorNullPtr", "Error null pointer.", "Invalid pointer, it's null.");
+RESULT_DEFINE(ErrorEmptyContainer, "ErrorEmptyContainer",
+			  "Error empty container. Indicates that a data container isn't expected to be empty.",
+			  "Failed. Invalid container data, it is empty.");
+RESULT_DEFINE(ErrorEmptySrcContainer, "ErrorEmptySrcContainer",
+			  "Error empty source container. Indicates that a data container isn't expected to be empty.",
+			  "Failed. Invalid source container data, it is empty.");
+RESULT_DEFINE(ErrorEmptyDstContainer, "ErrorEmptyDstContainer",
+			  "Error empty destination container. Indicates that a data container isn't expected to be empty.",
+			  "Failed. Invalid destination container data, it is empty.");
+RESULT_DEFINE(ErrorOutOfBounds, "ErrorOutOfBounds",
+			  "Error out of bounds. Indicates that a memory location was handled out of the buffer's memory range.",
+			  "Failed. A memory location was handled out of the buffer's memory range.");
 
 #endif

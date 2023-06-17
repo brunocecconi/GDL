@@ -31,7 +31,7 @@
 #include <type_traits>
 #include <cassert>
 
-#define BC_ALIGN_MEMORY(SIZE, ALIGNMENT)	(SIZE + (ALIGNMENT-1)) & ~(ALIGNMENT-1)
+#define BC_ALIGN_MEMORY(SIZE, ALIGNMENT) (SIZE + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1)
 
 #ifndef BC_ALLOCATION_FUNCTIONS
 #define BC_ALLOCATION_FUNCTIONS
