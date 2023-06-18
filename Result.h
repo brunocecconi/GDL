@@ -35,10 +35,21 @@
 		return {TYPE_NAME, DESCRIPTION, ERROR_MESSAGE};                                                                \
 	}
 
-#define RESULT_DEFINE_TAG(SYMBOL_NAME)	RESULT_DEFINE(SYMBOL_NAME, nullptr, nullptr, nullptr)
+#define RESULT_DEFINE_TAG(SYMBOL_NAME) RESULT_DEFINE(SYMBOL_NAME, nullptr, nullptr, nullptr)
+#define RESULT_PARAM_OPT			   result_t& Result = *(result_t*)&ResultOk
+#define RESULT_UNUSED_PARAM_OPT		   result_t& = *(result_t*)&ResultOk
+#define RESULT_PARAM				   result_t& Result
+#define RESULT_UNUSED_PARAM			   result_t&
+#define RESULT_COMPOSED_PARAM_OPT	   result_composed_t& Result = *(result_t*)&ResultOk
+#define RESULT_COMPOSED_PARAM		   result_composed_t& Result
 
-#define RESULT_PARAM_OPT result_t& Result = *(result_t*)&ResultOk
-#define RESULT_PARAM	 result_t& Result
+// Used to check and set result and return from function as well. COND is the condition needed to fail.
+#define RESULT_CHECK(COND, RESULT, ...)                                                                                \
+	if (COND && (Result = RESULT))                                                                                     \
+	return __VA_ARGS__
+
+#define RESULT_RETURN_CHECK(COND, RESULT)	\
+	if(COND) return RESULT
 
 /**
  * @brief Structure that holds data information.
@@ -56,23 +67,39 @@ struct ResultInfo
 
 /**
  * @brief Result type.
- * 
-*/
+ *
+ */
 using result_t = ResultInfo (*)();
 
 /**
  * @brief Result ensure argument type.
  *
  * Composes function result to check its arguments or anything you need more information about.
- * Ex: if you have a function that has as parameters two pointers, result_composed_t TestPointer(void* P1, void* P2){}. You can
- * with this way, check pointers and use ErrorNullPtr passing as second array position, if it fails, as ResultArg0 or ResultArg1. 
- * I have made eight tag functions, if you need more than eight parameters to a function you probably want to create a structure instead.
- * And the user can check using 'if(R.Result == ResultNullPtr && R.Other == ResultArg0)' indicates that you are 
- * checking if function has returned a nullptr error for the first argument.
- * 
-*/
+ * Ex: if you have a function that has as parameters two pointers, result_composed_t TestPointer(void* P1, void* P2){}.
+ * You can with this way, check pointers and use ErrorNullPtr passing as second array position, if it fails, as
+ * ResultArg0 or ResultArg1. I have made eight tag functions, if you need more than eight parameters to a function you
+ * probably want to create a structure instead. And the user can check using 'if(R.Result == ResultNullPtr && R.Other ==
+ * ResultArg0)' indicates that you are checking if function has returned a nullptr error for the first argument.
+ *
+ */
 struct result_composed_t
 {
+	result_composed_t() = default;
+	result_composed_t(const result_t Result) : Result{Result}
+	{
+	}
+	result_composed_t(const result_t Result, const result_t Other) : Result{Result}, Other{Other}
+	{
+	}
+	result_composed_t(const result_composed_t&)				   = default;
+	result_composed_t(result_composed_t&&) noexcept			   = default;
+	result_composed_t& operator=(const result_composed_t&)	   = default;
+	result_composed_t& operator=(result_composed_t&&) noexcept = default;
+	~result_composed_t()									   = default;
+	operator result_t()
+	{
+		return Result;
+	}
 	result_t Result{};
 	result_t Other{};
 };
@@ -83,7 +110,8 @@ RESULT_DEFINE(ErrorNullPtr, "ErrorNullPtr", "Error null pointer.", "Invalid poin
 RESULT_DEFINE(ErrorEmptyContainer, "ErrorEmptyContainer",
 			  "Error empty container. Indicates that a data container isn't expected to be empty.",
 			  "Failed. Invalid container data, it is empty.");
-RESULT_DEFINE(ErrorNotEnoughMemory, "ErrorNotEnoughMemory",
+RESULT_DEFINE(
+	ErrorNotEnoughMemory, "ErrorNotEnoughMemory",
 	"Error not enough memory. Indicates that a structure doesn't have memory necessary for its internal logic.",
 	"Failed. Target structure doesn't have enough memory for system internal logic.");
 RESULT_DEFINE(ErrorOutOfBounds, "ErrorOutOfBounds",
